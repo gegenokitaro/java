@@ -319,6 +319,29 @@ public class testing extends javax.swing.JFrame {
         upd.setInt(7, id);
         upd.executeUpdate();
     }
+    
+    void all() throws SQLException {
+        String query = "SELECT * FROM `mata_kuliah` JOIN `pokok_bahasan` JOIN `soal` WHERE `mata_kuliah`.`id`=`pokok_bahasan`.`id_matkul` AND `pokok_bahasan`.`id`=`soal`.`id_pokba`";
+        String print = "";
+        
+        set = state.executeQuery(query);
+        while (set.next()) {            
+            print += set.getInt(1)+","+
+                    set.getString(2)+","+
+                    set.getInt(3)+","+
+                    set.getString(4)+","+
+                    set.getInt(5)+","+
+                    set.getInt(6)+","+
+                    set.getString(7)+","+
+                    set.getString(8)+","+
+                    set.getString(9)+","+
+                    set.getString(10)+","+
+                    set.getString(11)+","+
+                    set.getString(12)+","+
+                    set.getInt(13)+"\n";
+        }
+        System.out.println(print);
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -368,6 +391,8 @@ public class testing extends javax.swing.JFrame {
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         soal_id = new javax.swing.JTextField();
+        jPanel1 = new javax.swing.JPanel();
+        export = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -705,6 +730,32 @@ public class testing extends javax.swing.JFrame {
 
         tab.addTab("Soal", panel_soal);
 
+        export.setText("export");
+        export.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                exportActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addContainerGap(222, Short.MAX_VALUE)
+                .addComponent(export, javax.swing.GroupLayout.PREFERRED_SIZE, 299, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(204, 204, 204))
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(116, 116, 116)
+                .addComponent(export, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(167, Short.MAX_VALUE))
+        );
+
+        tab.addTab("Export", jPanel1);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -878,6 +929,15 @@ public class testing extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_soal_updateActionPerformed
 
+    private void exportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportActionPerformed
+        try {
+            // TODO add your handling code here:
+            all();
+        } catch (SQLException ex) {
+            Logger.getLogger(testing.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_exportActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -917,6 +977,7 @@ public class testing extends javax.swing.JFrame {
     private javax.swing.JComboBox<String> combo_kunci;
     private javax.swing.JComboBox<String> combo_matkul;
     private javax.swing.JComboBox<String> combo_pokba;
+    private javax.swing.JButton export;
     private javax.swing.JTextField inp_a;
     private javax.swing.JTextField inp_b;
     private javax.swing.JTextField inp_c;
@@ -927,6 +988,7 @@ public class testing extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
