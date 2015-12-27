@@ -6,6 +6,8 @@
 package ave;
 
 import java.util.LinkedList;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -16,14 +18,20 @@ public class pop extends javax.swing.JFrame {
     /**
      * Creates new form pop
      */
-    LinkedList<Aev> sl = new LinkedList<>();
+    public static LinkedList<Aev> sl = new LinkedList<>();
     
     public pop() {
         initComponents();
-    }
-    
-    void showSoal() {
         
+        
+    }
+     
+    public static void showSoal() {
+        for (int i = 0; i < sl.size(); i++) {
+            ((DefaultTableModel)tbl_soal.getModel()).setRowCount(i+1);
+            tbl_soal.setValueAt(sl.get(i).getDesk(), i, 0);
+            System.out.println(sl.get(i).getDesk());
+        }
     }
 
     /**
@@ -37,7 +45,6 @@ public class pop extends javax.swing.JFrame {
 
         pilgan = new javax.swing.ButtonGroup();
         jScrollPane1 = new javax.swing.JScrollPane();
-        tbl_soal = new javax.swing.JTable();
         pil_a = new javax.swing.JTextField();
         pil_b = new javax.swing.JTextField();
         pil_c = new javax.swing.JTextField();
@@ -67,6 +74,7 @@ public class pop extends javax.swing.JFrame {
             }
         ));
         jScrollPane1.setViewportView(tbl_soal);
+        tbl_soal.getAccessibleContext().setAccessibleDescription("");
 
         pil_c.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -222,128 +230,7 @@ public class pop extends javax.swing.JFrame {
     private javax.swing.JTextField pil_c;
     private javax.swing.JTextField pil_d;
     private javax.swing.ButtonGroup pilgan;
-    private javax.swing.JTable tbl_soal;
+    public static final javax.swing.JTable tbl_soal = new javax.swing.JTable();
     // End of variables declaration//GEN-END:variables
-
-    private static class Aev {
-        
-        private int id_soal;
-        private String desk;
-        private String jwbn_a,jwbn_b,jwbn_c,jwbn_d;
-        private String kunci_jwbn;
-
-        public Aev() {
-            
-        }
-        
-        public Aev(int id_soal1, String desk1, String jwbn_a1, String jwbn_b1, String jwbn_c1, String jwbn_d1, String kunci_jwbn1) {
-            this.id_soal = id_soal1;
-            this.desk = desk1;
-            this.jwbn_a = jwbn_a1;
-            this.jwbn_b = jwbn_b1;
-            this.jwbn_c = jwbn_c1;
-            this.jwbn_d = jwbn_d1;
-            this.kunci_jwbn = kunci_jwbn1;
-        }
-
-        /**
-         * @return the id_soal
-         */
-        public int getId_soal() {
-            return id_soal;
-        }
-
-        /**
-         * @param id_soal the id_soal to set
-         */
-        public void setId_soal(int id_soal) {
-            this.id_soal = id_soal;
-        }
-
-        /**
-         * @return the desk
-         */
-        public String getDesk() {
-            return desk;
-        }
-
-        /**
-         * @param desk the desk to set
-         */
-        public void setDesk(String desk) {
-            this.desk = desk;
-        }
-
-        /**
-         * @return the jwbn_a
-         */
-        public String getJwbn_a() {
-            return jwbn_a;
-        }
-
-        /**
-         * @param jwbn_a the jwbn_a to set
-         */
-        public void setJwbn_a(String jwbn_a) {
-            this.jwbn_a = jwbn_a;
-        }
-
-        /**
-         * @return the jwbn_b
-         */
-        public String getJwbn_b() {
-            return jwbn_b;
-        }
-
-        /**
-         * @param jwbn_b the jwbn_b to set
-         */
-        public void setJwbn_b(String jwbn_b) {
-            this.jwbn_b = jwbn_b;
-        }
-
-        /**
-         * @return the jwbn_c
-         */
-        public String getJwbn_c() {
-            return jwbn_c;
-        }
-
-        /**
-         * @param jwbn_c the jwbn_c to set
-         */
-        public void setJwbn_c(String jwbn_c) {
-            this.jwbn_c = jwbn_c;
-        }
-
-        /**
-         * @return the jwbn_d
-         */
-        public String getJwbn_d() {
-            return jwbn_d;
-        }
-
-        /**
-         * @param jwbn_d the jwbn_d to set
-         */
-        public void setJwbn_d(String jwbn_d) {
-            this.jwbn_d = jwbn_d;
-        }
-
-        /**
-         * @return the kunci_jwbn
-         */
-        public String getKunci_jwbn() {
-            return kunci_jwbn;
-        }
-
-        /**
-         * @param kunci_jwbn the kunci_jwbn to set
-         */
-        public void setKunci_jwbn(String kunci_jwbn) {
-            this.kunci_jwbn = kunci_jwbn;
-        }
-        
-        
-    }
+   
 }
