@@ -17,6 +17,7 @@ import javax.swing.ButtonModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JRadioButton;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -73,9 +74,11 @@ public class testing extends javax.swing.JFrame {
         showMatkul();
         parsePokba(tbl_matkul, "pokok_bahasan", "mata_kuliah", "id_matkul", "matkul");
         parseSoal();
+        parseMany();
     }
     
     void showMatkul() {
+        ((DefaultTableModel)this.tbl_matkul.getModel()).setRowCount(0);
         for (int i = 0; i < mk.size(); i++) {
             ((DefaultTableModel)this.tbl_matkul.getModel()).setRowCount(i+1);
             tbl_matkul.setValueAt(mk.get(i).getMatkul(), i, 0);
@@ -117,6 +120,12 @@ public class testing extends javax.swing.JFrame {
                 
                 j_text.setText(value);
                 
+                combo_matkul.setSelectedItem(value);
+                
+                String test = "SELECT id FROM mata_kuliah WHERE matkul='"+value+"'";
+                
+                getId(test, matkul_id);
+                
                 String query = "SELECT * FROM "+tabel_1+" JOIN "+tabel_2+" WHERE "+tabel_2+".id="+tabel_1+"."+id_1+" AND "+tabel_2+"."+id_2+"='"+value+"'";
                 try {
                     state = con.createStatement();
@@ -156,12 +165,18 @@ public class testing extends javax.swing.JFrame {
                 
                 pokba_text.setText(value);
                 
+                combo_pokba.setSelectedItem(value);
+                
+                String test = "SELECT id FROM pokok_bahasan WHERE pokba='"+value+"'";
+                
+                getId(test, pokba_id);
+                
                 String query = "SELECT * FROM soal JOIN pokok_bahasan WHERE pokok_bahasan.id=soal.id_pokba AND pokok_bahasan.pokba='"+value+"'";
                 try {
                     state = con.createStatement();
                     set = state.executeQuery(query);
-                                        
-                    while (set.next()) {                        
+                    
+                    while (set.next()) {
                         sl.add(new Aev(
                                 set.getInt(1),
                                 set.getString(2),
@@ -173,6 +188,7 @@ public class testing extends javax.swing.JFrame {
                                 set.getInt(8)
                         ));
                     }
+                    
                     //System.out.println("kos");
                     
                 } catch (SQLException ex) {
@@ -183,7 +199,47 @@ public class testing extends javax.swing.JFrame {
             }
         };
         tbl_pokba.addMouseListener(selectedCell);
-    }    
+    }
+
+    void parseMany() {
+        MouseListener selectedRow;
+        selectedRow = new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                int row = tbl_soal.rowAtPoint(e.getPoint());
+                String deskripsi = tbl_soal.getValueAt(row, 0).toString();
+                String ans_a = tbl_soal.getValueAt(row, 1).toString();
+                String ans_b = tbl_soal.getValueAt(row, 2).toString();
+                String ans_c = tbl_soal.getValueAt(row, 3).toString();
+                String ans_d = tbl_soal.getValueAt(row, 4).toString();
+                String kunci = tbl_soal.getValueAt(row, 5).toString();
+                
+                inp_desk.setText(deskripsi);
+                inp_a.setText(ans_a);
+                inp_b.setText(ans_b);
+                inp_c.setText(ans_c);
+                inp_d.setText(ans_d);
+                
+                combo_kunci.setSelectedItem(kunci);
+                
+                String test = "SELECT id FROM soal WHERE deskripsi='"+deskripsi+"'";
+                
+                getId(test, soal_id);
+            }
+        };
+        tbl_soal.addMouseListener(selectedRow);
+    }
+    
+    void getId(String test, JTextField jtext) {
+        try {
+                set = state.executeQuery(test);
+                if (set.next()) {
+                    int code = set.getInt("id");
+                    jtext.setText(String.valueOf(code));
+                }
+        } catch (SQLException ex) {
+            Logger.getLogger(testing.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
     
     void addMatkul(final String input, final String tabel, final String kolom) throws SQLException {
         String query = "INSERT INTO "+tabel+"("+kolom+")"+" VALUES (?)";
@@ -221,10 +277,12 @@ public class testing extends javax.swing.JFrame {
     
     void newMatkul() {
         j_text.setText("");
+        matkul_id.setText("");
     }
     
     void newPokba() {
         pokba_text.setText("");
+        pokba_id.setText("");
     }
     
     void newSoal() {
@@ -233,6 +291,33 @@ public class testing extends javax.swing.JFrame {
         inp_b.setText("");
         inp_c.setText("");
         inp_d.setText("");
+    }
+    
+    void delSoal() {
+        
+    }
+    
+    void updateSingle(String tabel, String field, String value, int id) throws SQLException {
+        String query = "UPDATE "+tabel+" set "+field+"= ? WHERE id = ?";
+        
+        PreparedStatement upd = con.prepareStatement(query);
+        upd.setString(1, value);
+        upd.setInt(2, id);
+        upd.executeUpdate();
+    }
+    
+    void updateSoal(String desk, String ja, String jb, String jc, String jd, String kc, int id) throws SQLException {
+        String query = "UPDATE `soal` SET `deskripsi`= ?, `j_a` = ?, `j_b` = ?, `j_c` = ?, `j_d` = ?, `kunci` = ? WHERE `soal`.`id` = ?";
+        
+        PreparedStatement upd = con.prepareStatement(query);
+        upd.setString(1, desk);
+        upd.setString(2, ja);
+        upd.setString(3, jb);
+        upd.setString(4, jc);
+        upd.setString(5, jd);
+        upd.setString(6, kc);
+        upd.setInt(7, id);
+        upd.executeUpdate();
     }
     /**
      * This method is called from within the constructor to initialize the form.
@@ -261,6 +346,8 @@ public class testing extends javax.swing.JFrame {
         pokba_text = new javax.swing.JTextField();
         pokba_new = new javax.swing.JButton();
         combo_matkul = new javax.swing.JComboBox<>();
+        matkul_id = new javax.swing.JTextField();
+        pokba_id = new javax.swing.JTextField();
         panel_soal = new javax.swing.JPanel();
         jScrollPane3 = new javax.swing.JScrollPane();
         tbl_soal = new javax.swing.JTable();
@@ -280,6 +367,7 @@ public class testing extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
+        soal_id = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -374,6 +462,10 @@ public class testing extends javax.swing.JFrame {
             }
         });
 
+        matkul_id.setEditable(false);
+
+        pokba_id.setEditable(false);
+
         javax.swing.GroupLayout panel_matkulLayout = new javax.swing.GroupLayout(panel_matkul);
         panel_matkul.setLayout(panel_matkulLayout);
         panel_matkulLayout.setHorizontalGroup(
@@ -383,7 +475,9 @@ public class testing extends javax.swing.JFrame {
                 .addGroup(panel_matkulLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 306, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(panel_matkulLayout.createSequentialGroup()
-                        .addComponent(j_text, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(panel_matkulLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(j_text, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(matkul_id, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(panel_matkulLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addGroup(panel_matkulLayout.createSequentialGroup()
@@ -396,6 +490,7 @@ public class testing extends javax.swing.JFrame {
                                 .addComponent(j_save)))))
                 .addGap(18, 18, 18)
                 .addGroup(panel_matkulLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(pokba_id, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 354, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(panel_matkulLayout.createSequentialGroup()
                         .addGroup(panel_matkulLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
@@ -417,20 +512,7 @@ public class testing extends javax.swing.JFrame {
             panel_matkulLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panel_matkulLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(panel_matkulLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(panel_matkulLayout.createSequentialGroup()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(27, 27, 27)
-                        .addGroup(panel_matkulLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(j_text, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(panel_matkulLayout.createSequentialGroup()
-                                .addGroup(panel_matkulLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(j_new)
-                                    .addComponent(j_update))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(panel_matkulLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(j_save)
-                                    .addComponent(j_view)))))
+                .addGroup(panel_matkulLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panel_matkulLayout.createSequentialGroup()
                         .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 148, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(27, 27, 27)
@@ -446,8 +528,26 @@ public class testing extends javax.swing.JFrame {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(panel_matkulLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                     .addComponent(pokba_save)
-                                    .addComponent(pokba_view))))))
-                .addContainerGap(203, Short.MAX_VALUE))
+                                    .addComponent(pokba_view)))))
+                    .addGroup(panel_matkulLayout.createSequentialGroup()
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(27, 27, 27)
+                        .addGroup(panel_matkulLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(panel_matkulLayout.createSequentialGroup()
+                                .addComponent(j_text, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(matkul_id, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(panel_matkulLayout.createSequentialGroup()
+                                .addGroup(panel_matkulLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(j_new)
+                                    .addComponent(j_update))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(panel_matkulLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(j_save)
+                                    .addComponent(j_view))))))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(pokba_id, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(165, Short.MAX_VALUE))
         );
 
         tab.addTab("Matkul & Pokba", panel_matkul);
@@ -498,6 +598,11 @@ public class testing extends javax.swing.JFrame {
         });
 
         soal_update.setText("Update");
+        soal_update.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                soal_updateActionPerformed(evt);
+            }
+        });
 
         jButton4.setText("?");
 
@@ -510,6 +615,8 @@ public class testing extends javax.swing.JFrame {
         jLabel3.setText("C");
 
         jLabel4.setText("D");
+
+        soal_id.setEditable(false);
 
         javax.swing.GroupLayout panel_soalLayout = new javax.swing.GroupLayout(panel_soal);
         panel_soal.setLayout(panel_soalLayout);
@@ -545,13 +652,16 @@ public class testing extends javax.swing.JFrame {
                                 .addComponent(inp_c, javax.swing.GroupLayout.PREFERRED_SIZE, 314, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(68, 68, 68))))
                     .addGroup(panel_soalLayout.createSequentialGroup()
-                        .addComponent(soal_new, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(soal_save, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(soal_update, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(panel_soalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(panel_soalLayout.createSequentialGroup()
+                                .addComponent(soal_new, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(soal_save, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(soal_update, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(soal_id, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
@@ -582,7 +692,9 @@ public class testing extends javax.swing.JFrame {
                             .addComponent(inp_d, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel4)))
                     .addComponent(jScrollPane4))
-                .addGap(18, 46, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 8, Short.MAX_VALUE)
+                .addComponent(soal_id, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panel_soalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(soal_new)
                     .addComponent(soal_save)
@@ -613,6 +725,15 @@ public class testing extends javax.swing.JFrame {
 
     private void j_updateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_j_updateActionPerformed
         
+        String tabel = "mata_kuliah";
+        String field = "matkul";
+        String value = j_text.getText();
+        int id = Integer.valueOf(matkul_id.getText());
+        try {
+            updateSingle(tabel, field, value, id);
+        } catch (SQLException ex) {
+            Logger.getLogger(testing.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_j_updateActionPerformed
 
     private void tbl_matkulMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tbl_matkulMouseClicked
@@ -631,6 +752,15 @@ public class testing extends javax.swing.JFrame {
 
     private void pokba_updateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pokba_updateActionPerformed
         // TODO add your handling code here:
+        String tabel = "pokok_bahasan";
+        String field = "pokba";
+        String value = pokba_text.getText();
+        int id = Integer.valueOf(pokba_id.getText());
+        try {
+            updateSingle(tabel, field, value, id);
+        } catch (SQLException ex) {
+            Logger.getLogger(testing.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_pokba_updateActionPerformed
 
     private void pokba_viewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pokba_viewActionPerformed
@@ -729,6 +859,25 @@ public class testing extends javax.swing.JFrame {
         newSoal();
     }//GEN-LAST:event_soal_newActionPerformed
 
+    private void soal_updateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_soal_updateActionPerformed
+        // TODO add your handling code here:
+        String desk,ja,jb,jc,jd,kc;
+        int id;
+        desk = inp_desk.getText();
+        ja = inp_a.getText();
+        jb = inp_b.getText();
+        jc = inp_c.getText();
+        jd = inp_d.getText();
+        kc = combo_kunci.getSelectedItem().toString();
+        id = Integer.valueOf(soal_id.getText());
+        
+        try {
+            updateSoal(desk, ja, jb, jc, jd, kc, id);
+        } catch (SQLException ex) {
+            Logger.getLogger(testing.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_soal_updateActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -787,14 +936,17 @@ public class testing extends javax.swing.JFrame {
     private javax.swing.JTextField j_text;
     private javax.swing.JButton j_update;
     private javax.swing.JButton j_view;
+    private javax.swing.JTextField matkul_id;
     private javax.swing.JPanel panel_matkul;
     private javax.swing.JPanel panel_soal;
     private javax.swing.ButtonGroup pilihan_jawaban;
+    private javax.swing.JTextField pokba_id;
     private javax.swing.JButton pokba_new;
     private javax.swing.JButton pokba_save;
     private javax.swing.JTextField pokba_text;
     private javax.swing.JButton pokba_update;
     private javax.swing.JButton pokba_view;
+    private javax.swing.JTextField soal_id;
     private javax.swing.JButton soal_new;
     private javax.swing.JButton soal_save;
     private javax.swing.JButton soal_update;
