@@ -8,6 +8,14 @@ package ave;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.sql.*;
 import java.util.LinkedList;
 import java.util.logging.Level;
@@ -15,6 +23,7 @@ import java.util.logging.Logger;
 import javax.swing.ButtonGroup;
 import javax.swing.ButtonModel;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JFileChooser;
 import javax.swing.JRadioButton;
 import javax.swing.JTable;
 import javax.swing.JTextField;
@@ -321,26 +330,10 @@ public class testing extends javax.swing.JFrame {
     }
     
     void all() throws SQLException {
-        String query = "SELECT * FROM `mata_kuliah` JOIN `pokok_bahasan` JOIN `soal` WHERE `mata_kuliah`.`id`=`pokok_bahasan`.`id_matkul` AND `pokok_bahasan`.`id`=`soal`.`id_pokba`";
-        String print = "";
         
-        set = state.executeQuery(query);
-        while (set.next()) {            
-            print += set.getInt(1)+","+
-                    set.getString(2)+","+
-                    set.getInt(3)+","+
-                    set.getString(4)+","+
-                    set.getInt(5)+","+
-                    set.getInt(6)+","+
-                    set.getString(7)+","+
-                    set.getString(8)+","+
-                    set.getString(9)+","+
-                    set.getString(10)+","+
-                    set.getString(11)+","+
-                    set.getString(12)+","+
-                    set.getInt(13)+"\n";
-        }
-        System.out.println(print);
+        
+                
+           
     }
     /**
      * This method is called from within the constructor to initialize the form.
@@ -930,12 +923,50 @@ public class testing extends javax.swing.JFrame {
     }//GEN-LAST:event_soal_updateActionPerformed
 
     private void exportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportActionPerformed
+        String query = "SELECT * FROM `mata_kuliah` JOIN `pokok_bahasan` JOIN `soal` WHERE `mata_kuliah`.`id`=`pokok_bahasan`.`id_matkul` AND `pokok_bahasan`.`id`=`soal`.`id_pokba`";
+                
+        String print = "";
         try {
-            // TODO add your handling code here:
-            all();
+            set = state.executeQuery(query);
+            while (set.next()) {
+                print += set.getInt(1)+","+
+                        set.getString(2)+","+
+                        set.getInt(3)+","+
+                        set.getString(4)+","+
+                        set.getInt(5)+","+
+                        set.getInt(6)+","+
+                        set.getString(7)+","+
+                        set.getString(8)+","+
+                        set.getString(9)+","+
+                        set.getString(10)+","+
+                        set.getString(11)+","+
+                        set.getString(12)+","+
+                        set.getInt(13)+"\n";
+            }
+            
         } catch (SQLException ex) {
             Logger.getLogger(testing.class.getName()).log(Level.SEVERE, null, ex);
+            //System.out.println("gagal");
         }
+        //System.out.println(print);
+        JFileChooser fc = new JFileChooser();
+        fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        int result = fc.showSaveDialog(this);
+        String path = fc.getSelectedFile().getAbsolutePath();
+        //System.out.println(path);
+        try {
+            File file = new File(path+"/test.csv");
+            if (!file.exists()) {
+                file.createNewFile();
+            }
+            FileWriter fw = new FileWriter(file.getAbsoluteFile());
+            BufferedWriter bw = new BufferedWriter(fw);
+            bw.write(print);
+            bw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        
     }//GEN-LAST:event_exportActionPerformed
 
     /**
