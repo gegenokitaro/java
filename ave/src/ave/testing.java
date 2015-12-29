@@ -924,8 +924,14 @@ public class testing extends javax.swing.JFrame {
 
     private void exportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportActionPerformed
         String query = "SELECT * FROM `mata_kuliah` JOIN `pokok_bahasan` JOIN `soal` WHERE `mata_kuliah`.`id`=`pokok_bahasan`.`id_matkul` AND `pokok_bahasan`.`id`=`soal`.`id_pokba`";
+        String qMatkul = "SELECT * FROM mata_kuliah";
+        String qPokba = "SELECT * FROM pokok_bahasan";
+        String qSoal = "SELECT * FROM soal";
                 
         String print = "";
+        String pMatkul = "";
+        String pPokba = "";
+        String pSoal = "";
         try {
             set = state.executeQuery(query);
             while (set.next()) {
@@ -942,6 +948,31 @@ public class testing extends javax.swing.JFrame {
                         set.getString(11)+","+
                         set.getString(12)+","+
                         set.getInt(13)+"\n";
+            }
+            
+            set = state.executeQuery(qMatkul);
+            while (set.next()) {
+                pMatkul += set.getInt(1)+","+
+                        set.getString(2)+"\n";
+            }
+            
+            set = state.executeQuery(qPokba);
+            while (set.next()) {
+                pPokba += set.getInt(1)+","+
+                        set.getString(2)+","+
+                        set.getInt(3)+"\n";
+            }
+            
+            set = state.executeQuery(qSoal);
+            while (set.next()) {
+                pSoal += set.getInt(1)+","+
+                        set.getString(2)+","+
+                        set.getString(3)+","+
+                        set.getString(4)+","+
+                        set.getString(5)+","+
+                        set.getString(6)+","+
+                        set.getString(7)+","+
+                        set.getInt(8)+"\n";
             }
             
         } catch (SQLException ex) {
@@ -966,7 +997,42 @@ public class testing extends javax.swing.JFrame {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        
+        try {
+            File file = new File(path+"/test_matkul.csv");
+            if (!file.exists()) {
+                file.createNewFile();
+            }
+            FileWriter fw = new FileWriter(file.getAbsoluteFile());
+            BufferedWriter bw = new BufferedWriter(fw);
+            bw.write(pMatkul);
+            bw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            File file = new File(path+"/test_pokba.csv");
+            if (!file.exists()) {
+                file.createNewFile();
+            }
+            FileWriter fw = new FileWriter(file.getAbsoluteFile());
+            BufferedWriter bw = new BufferedWriter(fw);
+            bw.write(pPokba);
+            bw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            File file = new File(path+"/test_soal.csv");
+            if (!file.exists()) {
+                file.createNewFile();
+            }
+            FileWriter fw = new FileWriter(file.getAbsoluteFile());
+            BufferedWriter bw = new BufferedWriter(fw);
+            bw.write(pSoal);
+            bw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }//GEN-LAST:event_exportActionPerformed
 
     /**
