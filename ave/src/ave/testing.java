@@ -8,23 +8,15 @@ package ave;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.sql.*;
 import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.ButtonGroup;
-import javax.swing.ButtonModel;
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.JFileChooser;
-import javax.swing.JRadioButton;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
@@ -33,7 +25,7 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author rzl
  */
-public class testing extends javax.swing.JFrame {
+public final class testing extends javax.swing.JFrame {
 
     /**
      * Creates new form testing
@@ -213,6 +205,7 @@ public class testing extends javax.swing.JFrame {
     void parseMany() {
         MouseListener selectedRow;
         selectedRow = new MouseAdapter() {
+            @Override
             public void mouseClicked(MouseEvent e) {
                 int row = tbl_soal.rowAtPoint(e.getPoint());
                 String deskripsi = tbl_soal.getValueAt(row, 0).toString();
@@ -991,11 +984,10 @@ public class testing extends javax.swing.JFrame {
                 file.createNewFile();
             }
             FileWriter fw = new FileWriter(file.getAbsoluteFile());
-            BufferedWriter bw = new BufferedWriter(fw);
-            bw.write(print);
-            bw.close();
+            try (BufferedWriter bw = new BufferedWriter(fw)) {
+                bw.write(print);
+            }
         } catch (IOException e) {
-            e.printStackTrace();
         }
         try {
             File file = new File(path+"/test_matkul.csv");
@@ -1003,11 +995,10 @@ public class testing extends javax.swing.JFrame {
                 file.createNewFile();
             }
             FileWriter fw = new FileWriter(file.getAbsoluteFile());
-            BufferedWriter bw = new BufferedWriter(fw);
-            bw.write(pMatkul);
-            bw.close();
+            try (BufferedWriter bw = new BufferedWriter(fw)) {
+                bw.write(pMatkul);
+            }
         } catch (IOException e) {
-            e.printStackTrace();
         }
         try {
             File file = new File(path+"/test_pokba.csv");
@@ -1015,11 +1006,10 @@ public class testing extends javax.swing.JFrame {
                 file.createNewFile();
             }
             FileWriter fw = new FileWriter(file.getAbsoluteFile());
-            BufferedWriter bw = new BufferedWriter(fw);
-            bw.write(pPokba);
-            bw.close();
+            try (BufferedWriter bw = new BufferedWriter(fw)) {
+                bw.write(pPokba);
+            }
         } catch (IOException e) {
-            e.printStackTrace();
         }
         try {
             File file = new File(path+"/test_soal.csv");
@@ -1027,11 +1017,10 @@ public class testing extends javax.swing.JFrame {
                 file.createNewFile();
             }
             FileWriter fw = new FileWriter(file.getAbsoluteFile());
-            BufferedWriter bw = new BufferedWriter(fw);
-            bw.write(pSoal);
-            bw.close();
+            try (BufferedWriter bw = new BufferedWriter(fw)) {
+                bw.write(pSoal);
+            }
         } catch (IOException e) {
-            e.printStackTrace();
         }
     }//GEN-LAST:event_exportActionPerformed
 
@@ -1051,19 +1040,16 @@ public class testing extends javax.swing.JFrame {
                     break;
                 }
             }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(testing.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(testing.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(testing.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(testing.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 new testing().setVisible(true);
             }
