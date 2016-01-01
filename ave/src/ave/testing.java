@@ -916,70 +916,86 @@ public final class testing extends javax.swing.JFrame {
     }//GEN-LAST:event_soal_updateActionPerformed
 
     private void exportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportActionPerformed
-        String query = "SELECT * FROM `mata_kuliah` JOIN `pokok_bahasan` JOIN `soal` WHERE `mata_kuliah`.`id`=`pokok_bahasan`.`id_matkul` AND `pokok_bahasan`.`id`=`soal`.`id_pokba`";
-        String qMatkul = "SELECT * FROM mata_kuliah";
-        String qPokba = "SELECT * FROM pokok_bahasan";
-        String qSoal = "SELECT * FROM soal";
-                
+       
         String print = "";
-        String pMatkul = "";
-        String pPokba = "";
-        String pSoal = "";
+        
+        
+        
         try {
+            Statement stPb = null;
+            ResultSet sPb = null;
+            String query = "SELECT * FROM mata_kuliah";
+            stPb = con.createStatement();
             set = state.executeQuery(query);
-            while (set.next()) {
-                print += set.getInt(1)+","+
-                        set.getString(2)+","+
-                        set.getInt(3)+","+
-                        set.getString(4)+","+
-                        set.getInt(5)+","+
-                        set.getInt(6)+","+
-                        set.getString(7)+","+
-                        set.getString(8)+","+
-                        set.getString(9)+","+
-                        set.getString(10)+","+
-                        set.getString(11)+","+
-                        set.getString(12)+","+
-                        set.getInt(13)+"\n";
+            while (set.next()) {                
+                int xmk = set.getInt(1);
+                print += "\nMata Kuliah : "+
+                        set.getString(2)+/*","+
+                        " ,"+
+                        " ,"+
+                        " ,"+
+                        " ,"+
+                        " ,"+
+                        */" ";
+                String qPb = "SELECT * FROM pokok_bahasan WHERE id_matkul='"+xmk+"'";
+                sPb = stPb.executeQuery(qPb);
+                while (sPb.next()) {
+                    int xpb = 0;
+                    Statement stSl;
+                    ResultSet sSl;
+                    stSl = con.createStatement();
+                    xpb = sPb.getInt(1);
+                    print += "\nPokok Bahasan:"+
+                            sPb.getString(2)+/*","+
+                            " ,"+
+                            " ,"+
+                            " ,"+
+                            " ,"+
+                            " ,"+
+                            */" ";
+                    String qSl = "SELECT * FROM soal WHERE id_pokba='"+xpb+"'";
+                    sSl = stSl.executeQuery(qSl);
+                    int idx = 0;
+                    /*while (sSl.next()) {
+                        idx++;
+                        print += "\n"+idx+","+
+                                sSl.getString(2)+","+
+                                sSl.getString(3)+","+
+                                sSl.getString(4)+","+
+                                sSl.getString(5)+","+
+                                sSl.getString(6)+","+
+                                sSl.getString(7);
+                    }*/
+                    while (sSl.next()) {
+                        idx++;
+                        print += "\n"+idx+","+
+                                sSl.getString(2)+"\na. "+
+                                sSl.getString(3)+"\nb. "+
+                                sSl.getString(4)+"\nc. "+
+                                sSl.getString(5)+"\nd. "+
+                                sSl.getString(6)+"\nkunci: "+
+                                sSl.getString(7);
+                    }
+                }
+                print += "\n"+/*","+
+                        " ,"+
+                        " ,"+
+                        " ,"+
+                        " ,"+
+                        " ,"+
+                        */" ";
             }
-            
-            set = state.executeQuery(qMatkul);
-            while (set.next()) {
-                pMatkul += set.getInt(1)+","+
-                        set.getString(2)+"\n";
-            }
-            
-            set = state.executeQuery(qPokba);
-            while (set.next()) {
-                pPokba += set.getInt(1)+","+
-                        set.getString(2)+","+
-                        set.getInt(3)+"\n";
-            }
-            
-            set = state.executeQuery(qSoal);
-            while (set.next()) {
-                pSoal += set.getInt(1)+","+
-                        set.getString(2)+","+
-                        set.getString(3)+","+
-                        set.getString(4)+","+
-                        set.getString(5)+","+
-                        set.getString(6)+","+
-                        set.getString(7)+","+
-                        set.getInt(8)+"\n";
-            }
-            
         } catch (SQLException ex) {
             Logger.getLogger(testing.class.getName()).log(Level.SEVERE, null, ex);
-            //System.out.println("gagal");
         }
-        //System.out.println(print);
+        
         JFileChooser fc = new JFileChooser();
         fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         int result = fc.showSaveDialog(this);
         String path = fc.getSelectedFile().getAbsolutePath();
         //System.out.println(path);
         try {
-            File file = new File(path+"/test.csv");
+            File file = new File(path+"/test.txt");
             if (!file.exists()) {
                 file.createNewFile();
             }
@@ -989,39 +1005,8 @@ public final class testing extends javax.swing.JFrame {
             }
         } catch (IOException e) {
         }
-        try {
-            File file = new File(path+"/test_matkul.csv");
-            if (!file.exists()) {
-                file.createNewFile();
-            }
-            FileWriter fw = new FileWriter(file.getAbsoluteFile());
-            try (BufferedWriter bw = new BufferedWriter(fw)) {
-                bw.write(pMatkul);
-            }
-        } catch (IOException e) {
-        }
-        try {
-            File file = new File(path+"/test_pokba.csv");
-            if (!file.exists()) {
-                file.createNewFile();
-            }
-            FileWriter fw = new FileWriter(file.getAbsoluteFile());
-            try (BufferedWriter bw = new BufferedWriter(fw)) {
-                bw.write(pPokba);
-            }
-        } catch (IOException e) {
-        }
-        try {
-            File file = new File(path+"/test_soal.csv");
-            if (!file.exists()) {
-                file.createNewFile();
-            }
-            FileWriter fw = new FileWriter(file.getAbsoluteFile());
-            try (BufferedWriter bw = new BufferedWriter(fw)) {
-                bw.write(pSoal);
-            }
-        } catch (IOException e) {
-        }
+        
+        System.out.println(print);
     }//GEN-LAST:event_exportActionPerformed
 
     /**
